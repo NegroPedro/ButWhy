@@ -395,6 +395,74 @@ function makeSettingsButton(name,iconID,off)
 	return button
 end
 
+-- Create the GUI Window
+local notification = Instance.new("Frame")
+notification.Name = "Notification"
+notification.Parent = PARENT
+notification.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+notification.Size = UDim2.new(0, 200, 0, 50)
+notification.Position = UDim2.new(0.5, -100, 0.5, -25) -- Center of the screen
+notification.AnchorPoint = Vector2.new(0.5, 0.5)
+notification.BackgroundTransparency = 0.3
+
+-- Add a Text Label
+local textLabel = Instance.new("TextLabel", notification)
+textLabel.Size = UDim2.new(1, 0, 1, 0)
+textLabel.Text = "Made by ButWhyGx"
+textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+textLabel.Font = Enum.Font.SourceSansBold
+textLabel.TextScaled = true
+textLabel.BackgroundTransparency = 1
+
+-- Rainbow Glow Functionality
+local function startRainbowEffect(frame)
+    spawn(function()
+        while frame and frame.Parent do
+            for hue = 0, 1, 0.01 do
+                frame.BackgroundColor3 = Color3.fromHSV(hue, 1, 1)
+                wait(0.03)
+            end
+        end
+    end)
+end
+
+-- Movement Animation
+local TweenService = game:GetService("TweenService")
+
+local function moveToTopRight(frame)
+    local middleTweenInfo = TweenInfo.new(2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    local topRightTweenInfo = TweenInfo.new(3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+    -- Move to the top-right
+    local middleTween = TweenService:Create(frame, middleTweenInfo, {
+        Position = UDim2.new(0.5, -100, 0.5, -25) -- Center
+    })
+    local topRightTween = TweenService:Create(frame, topRightTweenInfo, {
+        Position = UDim2.new(1, -210, 0, 10) -- Top-right corner
+    })
+
+    -- Sequence the tweens
+    middleTween:Play()
+    middleTween.Completed:Wait()
+    topRightTween:Play()
+    topRightTween.Completed:Wait()
+end
+
+-- Removal After 10 Seconds
+local function autoRemoveAfter(frame, seconds)
+    wait(seconds)
+    frame:Destroy()
+end
+
+-- Execute the Sequence
+startRainbowEffect(notification) -- Start glowing
+moveToTopRight(notification) -- Animate movement
+spawn(function()
+    wait(10) -- Stay in the corner for 10 seconds
+    notification:Destroy()
+end)
+
+
 ColorsButton = makeSettingsButton("Edit Theme","rbxassetid://4911962991")
 ColorsButton.Position = UDim2.new(0,5,0,55)
 ColorsButton.Size = UDim2.new(1,-10,0,25)
@@ -9340,7 +9408,7 @@ addcmd('invisible',{'invis'},function(args, speaker)
 		end)
 		invisRunning = false
 	end
-	notify('Invisible','David is a fucking Nigger')
+	notify('Invisible','You now appear invisible to other players')
 end)
 
 addcmd("visible", {"vis"}, function(args, speaker)
@@ -9948,122 +10016,6 @@ addcmd('tptool', {'teleporttool'}, function(args, speaker)
 		HRP.CFrame = CFrame.new(IYMouse.Hit.X, IYMouse.Hit.Y + 3, IYMouse.Hit.Z, select(4, HRP.CFrame:components()))
 	end)
 end)
-
--- Infinite Yield Enhanced Script
-if IY_LOADED and not _G.IY_DEBUG == true then
-    warn("Infinite Yield is already running. Aborting script.")
-    return
-end
-
-pcall(function() getgenv().IY_LOADED = true end)
-
--- Services and Utilities
-local function safeGetService(service)
-    local success, result = pcall(game.GetService, game, service)
-    if success then
-        return cloneref(result)
-    else
-        error("Service not found: " .. tostring(service), 2)
-    end
-end
-
-COREGUI = safeGetService("CoreGui")
-Players = safeGetService("Players")
-
-if not game:IsLoaded() then
-    local loadingMessage = Instance.new("Message", COREGUI)
-    loadingMessage.Text = "Infinite Yield is waiting for the game to load..."
-    game.Loaded:Wait()
-    loadingMessage:Destroy()
-end
-
-currentVersion = "6.1" -- Updated version for clarity
-local UserSettings = {} -- Persistent user settings
-
--- Utility to generate random strings for instance naming
-local function generateRandomName(length)
-    length = length or 16
-    return game.HttpService:GenerateGUID(false):sub(1, length)
-end
-
--- Persistent Storage for Settings
-local function saveSettings()
-    -- Implement a save method (e.g., local data storage or serialization)
-end
-
-local function loadSettings()
-    -- Implement a load method to fetch saved user preferences
-end
-
--- Dynamic Theme System
-local Theme = {
-    Light = {
-        Background = Color3.fromRGB(240, 240, 240),
-        Text = Color3.fromRGB(50, 50, 50),
-    },
-    Dark = {
-        Background = Color3.fromRGB(36, 36, 37),
-        Text = Color3.fromRGB(255, 255, 255),
-    }
-}
-
-local function applyTheme(theme)
-    -- Apply the chosen theme dynamically to all UI elements
-    for _, element in ipairs({Holder, Title, CMDsF}) do
-        element.BackgroundColor3 = theme.Background
-        element.TextColor3 = theme.Text
-    end
-end
-
--- New Feature: Command Search Bar
-CmdSearch = Instance.new("TextBox")
-CmdSearch.Name = "CmdSearch"
-CmdSearch.Parent = Holder
-CmdSearch.Position = UDim2.new(0, 5, 0, 75)
-CmdSearch.Size = UDim2.new(0, 240, 0, 25)
-CmdSearch.PlaceholderText = "Search Commands..."
-CmdSearch.Font = Enum.Font.SourceSans
-CmdSearch.TextSize = 18
-CmdSearch.TextColor3 = Theme.Dark.Text
-CmdSearch.BackgroundColor3 = Theme.Dark.Background
-CmdSearch.FocusLost:Connect(function()
-    local searchTerm = CmdSearch.Text:lower()
-    for _, command in ipairs(CMDsF:GetChildren()) do
-        command.Visible = string.find(command.Name:lower(), searchTerm) ~= nil
-    end
-end)
-
--- Enhanced Notification System
-local function showNotification(title, message, duration)
-    local notification = Instance.new("Frame", COREGUI)
-    notification.Size = UDim2.new(0, 300, 0, 100)
-    notification.Position = UDim2.new(0.5, -150, 0.9, -50)
-    notification.BackgroundColor3 = Theme.Dark.Background
-    notification.ZIndex = 10
-    notification.Visible = true
-
-    local notifTitle = Instance.new("TextLabel", notification)
-    notifTitle.Text = title
-    notifTitle.Font = Enum.Font.SourceSansBold
-    notifTitle.TextSize = 16
-    notifTitle.TextColor3 = Theme.Dark.Text
-    notifTitle.Position = UDim2.new(0, 5, 0, 5)
-    notifTitle.Size = UDim2.new(1, -10, 0, 20)
-
-    local notifMessage = Instance.new("TextLabel", notification)
-    notifMessage.Text = message
-    notifMessage.Font = Enum.Font.SourceSans
-    notifMessage.TextSize = 14
-    notifMessage.TextColor3 = Theme.Dark.Text
-    notifMessage.Position = UDim2.new(0, 5, 0, 30)
-    notifMessage.Size = UDim2.new(1, -10, 0, 60)
-    notifMessage.TextWrapped = true
-
-    game:GetService("Debris"):AddItem(notification, duration or 5)
-end
-
--- Show example notification
-showNotification("Welcome!", "Infinite Yield Enhanced v" .. currentVersion .. " is loaded.", 3)
 
 addcmd('clickdelete',{},function(args, speaker)
 	if speaker == Players.LocalPlayer then
@@ -12260,44 +12212,6 @@ getStaffRole = function(player)
     end
     return result
 end
-
--- Command List
-local function populateCommands()
-    local commands = {
-        "help - Show all commands",
-        "tp <x> <y> <z> - Teleport to coordinates",
-        "speed <value> - Set walk speed",
-    }
-    for _, child in ipairs(CMDsF:GetChildren()) do
-        if child:IsA("TextLabel") then
-            child:Destroy()
-        end
-    end
-    for index, command in ipairs(commands) do
-        local cmdLabel = Instance.new("TextLabel", CMDsF)
-        cmdLabel.Size = UDim2.new(1, -10, 0, 20)
-        cmdLabel.Position = UDim2.new(0, 5, 0, (index - 1) * 25)
-        cmdLabel.Text = command
-        cmdLabel.Font = Enum.Font.SourceSans
-        cmdLabel.TextSize = 14
-        cmdLabel.TextColor3 = Color3.new(1, 1, 1)
-        cmdLabel.BackgroundTransparency = 1
-    end
-    CMDsF.CanvasSize = UDim2.new(0, 0, 0, #commands * 25)
-end
-
--- Initialize Commands
-populateCommands()
-
--- Search Bar Logic
-CmdSearch.FocusLost:Connect(function()
-    local searchTerm = CmdSearch.Text:lower()
-    for _, child in ipairs(CMDsF:GetChildren()) do
-        if child:IsA("TextLabel") then
-            child.Visible = string.find(child.Text:lower(), searchTerm) ~= nil
-        end
-    end
-end)
 
 addcmd("staffwatch", {}, function(args, speaker)
     if staffwatchjoin then
