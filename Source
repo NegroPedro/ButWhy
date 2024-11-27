@@ -84,8 +84,6 @@ function showCustomNotification()
     -- Start color cycling in a separate thread
     task.spawn(cycleColors)
 
-   
-
 -- Call the function to display the notification
 showCustomNotification()
 
@@ -97,6 +95,7 @@ end
 
 -- Call the function to display the notification
 showCustomNotification()
+
 
 currentVersion = "6"
 
