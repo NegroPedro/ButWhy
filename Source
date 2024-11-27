@@ -1,5 +1,5 @@
 if IY_LOADED and not _G.IY_DEBUG == true then
-    -- error("Infinite Yield is already running!", 0)
+    warn("Infinite Yield is already running. Aborting script.")
     return
 end
 
@@ -17,85 +17,102 @@ if not game:IsLoaded() then
     notLoaded:Destroy()
 end
 
--- Function to display a custom notification
-function showCustomNotification()
-    local screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-    local frame = Instance.new("Frame", screenGui)
-    local textLabel = Instance.new("TextLabel", frame)
-
-    -- Configure the ScreenGui and Frame
-    screenGui.Name = "CustomNotification"
-    frame.Size = UDim2.new(0, 200, 0, 50)
-    frame.Position = UDim2.new(1, -210, 1, -60) -- Bottom-right corner with offset
-    frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    frame.BorderSizePixel = 0
-
-    -- Configure the TextLabel
-    textLabel.Size = UDim2.new(1, 0, 1, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.Text = "Made by ButWhyGx"
-    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textLabel.Font = Enum.Font.SourceSans
-    textLabel.TextScaled = true
-
--- Call the function to display the notification
-showCustomNotification()
-
--- Function to display a custom notification with flashing rainbow colors
-function showCustomNotification()
-    local screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-    local frame = Instance.new("Frame", screenGui)
-    local textLabel = Instance.new("TextLabel", frame)
-
-    -- Configure the ScreenGui and Frame
-    screenGui.Name = "CustomNotification"
-    frame.Size = UDim2.new(0, 200, 0, 50)
-    frame.Position = UDim2.new(1, -210, 0, 10) -- Top-right corner with offset
-    frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-    frame.BorderSizePixel = 0
-
-    -- Configure the TextLabel
-    textLabel.Size = UDim2.new(1, 0, 1, 0)
-    textLabel.BackgroundTransparency = 1
-    textLabel.Text = "Made by ButWhyGx"
-    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    textLabel.Font = Enum.Font.SourceSans
-    textLabel.TextScaled = true
-
-    -- Function to cycle rainbow colors
-    local function cycleColors()
-        local colors = {
-            Color3.fromRGB(255, 0, 0), -- Red
-            Color3.fromRGB(255, 165, 0), -- Orange
-            Color3.fromRGB(255, 255, 0), -- Yellow
-            Color3.fromRGB(0, 255, 0), -- Green
-            Color3.fromRGB(0, 255, 255), -- Cyan
-            Color3.fromRGB(0, 0, 255), -- Blue
-            Color3.fromRGB(128, 0, 128), -- Purple
-        }
-        local index = 1
-        while screenGui.Parent do
-            textLabel.TextColor3 = colors[index]
-            index = index % #colors + 1
-            task.wait(0.3) -- Adjust speed of the color change
-        end
+-- Services and Utilities
+local function safeGetService(service)
+    local success, result = pcall(game.GetService, game, service)
+    if success then
+        return cloneref(result)
+    else
+        error("Service not found: " .. tostring(service), 2)
     end
-
-    -- Start color cycling in a separate thread
-    task.spawn(cycleColors)
-
--- Call the function to display the notification
-showCustomNotification()
-
-    -- Destroy after 15 seconds
-    task.delay(15, function()
-        screenGui:Destroy()
-    end)
 end
 
--- Call the function to display the notification
-showCustomNotification()
+local UserSettings = {} -- Persistent user settings
 
+-- Utility to generate random strings for instance naming
+local function generateRandomName(length)
+    length = length or 16
+    return game.HttpService:GenerateGUID(false):sub(1, length)
+end
+
+-- Persistent Storage for Settings
+local function saveSettings()
+    -- Implement a save method (e.g., local data storage or serialization)
+end
+
+local function loadSettings()
+    -- Implement a load method to fetch saved user preferences
+end
+
+-- Dynamic Theme System
+local Theme = {
+    Light = {
+        Background = Color3.fromRGB(240, 240, 240),
+        Text = Color3.fromRGB(50, 50, 50),
+    },
+    Dark = {
+        Background = Color3.fromRGB(36, 36, 37),
+        Text = Color3.fromRGB(255, 255, 255),
+    }
+}
+
+local function applyTheme(theme)
+    -- Apply the chosen theme dynamically to all UI elements
+    for _, element in ipairs({Holder, Title, CMDsF}) do
+        element.BackgroundColor3 = theme.Background
+        element.TextColor3 = theme.Text
+    end
+end
+
+-- New Feature: Command Search Bar
+CmdSearch = Instance.new("TextBox")
+CmdSearch.Name = "CmdSearch"
+CmdSearch.Parent = Holder
+CmdSearch.Position = UDim2.new(0, 5, 0, 75)
+CmdSearch.Size = UDim2.new(0, 240, 0, 25)
+CmdSearch.PlaceholderText = "Search Commands..."
+CmdSearch.Font = Enum.Font.SourceSans
+CmdSearch.TextSize = 18
+CmdSearch.TextColor3 = Theme.Dark.Text
+CmdSearch.BackgroundColor3 = Theme.Dark.Background
+CmdSearch.FocusLost:Connect(function()
+    local searchTerm = CmdSearch.Text:lower()
+    for _, command in ipairs(CMDsF:GetChildren()) do
+        command.Visible = string.find(command.Name:lower(), searchTerm) ~= nil
+    end
+end)
+
+-- Enhanced Notification System
+local function showNotification(title, message, duration)
+    local notification = Instance.new("Frame", COREGUI)
+    notification.Size = UDim2.new(0, 300, 0, 100)
+    notification.Position = UDim2.new(0.5, -150, 0.9, -50)
+    notification.BackgroundColor3 = Theme.Dark.Background
+    notification.ZIndex = 10
+    notification.Visible = true
+
+    local notifTitle = Instance.new("TextLabel", notification)
+    notifTitle.Text = title
+    notifTitle.Font = Enum.Font.SourceSansBold
+    notifTitle.TextSize = 16
+    notifTitle.TextColor3 = Theme.Dark.Text
+    notifTitle.Position = UDim2.new(0, 5, 0, 5)
+    notifTitle.Size = UDim2.new(1, -10, 0, 20)
+
+    local notifMessage = Instance.new("TextLabel", notification)
+    notifMessage.Text = message
+    notifMessage.Font = Enum.Font.SourceSans
+    notifMessage.TextSize = 14
+    notifMessage.TextColor3 = Theme.Dark.Text
+    notifMessage.Position = UDim2.new(0, 5, 0, 30)
+    notifMessage.Size = UDim2.new(1, -10, 0, 60)
+    notifMessage.TextWrapped = true
+
+    game:GetService("Debris"):AddItem(notification, duration or 5)
+end
+
+-- Show example notification
+showNotification("Welcome!", "Infinite Yield Enhanced v" .. currentVersion .. " is loaded.", 3)
 
 currentVersion = "6"
 
