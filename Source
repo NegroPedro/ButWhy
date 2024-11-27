@@ -1,5 +1,5 @@
 if IY_LOADED and not _G.IY_DEBUG == true then
-    warn("Infinite Yield is already running. Aborting script.")
+    -- error("Infinite Yield is already running!", 0)
     return
 end
 
@@ -16,103 +16,6 @@ if not game:IsLoaded() then
     game.Loaded:Wait()
     notLoaded:Destroy()
 end
-
--- Services and Utilities
-local function safeGetService(service)
-    local success, result = pcall(game.GetService, game, service)
-    if success then
-        return cloneref(result)
-    else
-        error("Service not found: " .. tostring(service), 2)
-    end
-end
-
-local UserSettings = {} -- Persistent user settings
-
--- Utility to generate random strings for instance naming
-local function generateRandomName(length)
-    length = length or 16
-    return game.HttpService:GenerateGUID(false):sub(1, length)
-end
-
--- Persistent Storage for Settings
-local function saveSettings()
-    -- Implement a save method (e.g., local data storage or serialization)
-end
-
-local function loadSettings()
-    -- Implement a load method to fetch saved user preferences
-end
-
--- Dynamic Theme System
-local Theme = {
-    Light = {
-        Background = Color3.fromRGB(240, 240, 240),
-        Text = Color3.fromRGB(50, 50, 50),
-    },
-    Dark = {
-        Background = Color3.fromRGB(36, 36, 37),
-        Text = Color3.fromRGB(255, 255, 255),
-    }
-}
-
-local function applyTheme(theme)
-    -- Apply the chosen theme dynamically to all UI elements
-    for _, element in ipairs({Holder, Title, CMDsF}) do
-        element.BackgroundColor3 = theme.Background
-        element.TextColor3 = theme.Text
-    end
-end
-
--- New Feature: Command Search Bar
-CmdSearch = Instance.new("TextBox")
-CmdSearch.Name = "CmdSearch"
-CmdSearch.Parent = Holder
-CmdSearch.Position = UDim2.new(0, 5, 0, 75)
-CmdSearch.Size = UDim2.new(0, 240, 0, 25)
-CmdSearch.PlaceholderText = "Search Commands..."
-CmdSearch.Font = Enum.Font.SourceSans
-CmdSearch.TextSize = 18
-CmdSearch.TextColor3 = Theme.Dark.Text
-CmdSearch.BackgroundColor3 = Theme.Dark.Background
-CmdSearch.FocusLost:Connect(function()
-    local searchTerm = CmdSearch.Text:lower()
-    for _, command in ipairs(CMDsF:GetChildren()) do
-        command.Visible = string.find(command.Name:lower(), searchTerm) ~= nil
-    end
-end)
-
--- Enhanced Notification System
-local function showNotification(title, message, duration)
-    local notification = Instance.new("Frame", COREGUI)
-    notification.Size = UDim2.new(0, 300, 0, 100)
-    notification.Position = UDim2.new(0.5, -150, 0.9, -50)
-    notification.BackgroundColor3 = Theme.Dark.Background
-    notification.ZIndex = 10
-    notification.Visible = true
-
-    local notifTitle = Instance.new("TextLabel", notification)
-    notifTitle.Text = title
-    notifTitle.Font = Enum.Font.SourceSansBold
-    notifTitle.TextSize = 16
-    notifTitle.TextColor3 = Theme.Dark.Text
-    notifTitle.Position = UDim2.new(0, 5, 0, 5)
-    notifTitle.Size = UDim2.new(1, -10, 0, 20)
-
-    local notifMessage = Instance.new("TextLabel", notification)
-    notifMessage.Text = message
-    notifMessage.Font = Enum.Font.SourceSans
-    notifMessage.TextSize = 14
-    notifMessage.TextColor3 = Theme.Dark.Text
-    notifMessage.Position = UDim2.new(0, 5, 0, 30)
-    notifMessage.Size = UDim2.new(1, -10, 0, 60)
-    notifMessage.TextWrapped = true
-
-    game:GetService("Debris"):AddItem(notification, duration or 5)
-end
-
--- Show example notification
-showNotification("Welcome!", "Infinite Yield Enhanced v" .. currentVersion .. " is loaded.", 3)
 
 currentVersion = "6"
 
@@ -9437,7 +9340,7 @@ addcmd('invisible',{'invis'},function(args, speaker)
 		end)
 		invisRunning = false
 	end
-	notify('Invisible','You now appear invisible to other players')
+	notify('Invisible','David is a fucking Nigger')
 end)
 
 addcmd("visible", {"vis"}, function(args, speaker)
@@ -10045,6 +9948,122 @@ addcmd('tptool', {'teleporttool'}, function(args, speaker)
 		HRP.CFrame = CFrame.new(IYMouse.Hit.X, IYMouse.Hit.Y + 3, IYMouse.Hit.Z, select(4, HRP.CFrame:components()))
 	end)
 end)
+
+-- Infinite Yield Enhanced Script
+if IY_LOADED and not _G.IY_DEBUG == true then
+    warn("Infinite Yield is already running. Aborting script.")
+    return
+end
+
+pcall(function() getgenv().IY_LOADED = true end)
+
+-- Services and Utilities
+local function safeGetService(service)
+    local success, result = pcall(game.GetService, game, service)
+    if success then
+        return cloneref(result)
+    else
+        error("Service not found: " .. tostring(service), 2)
+    end
+end
+
+COREGUI = safeGetService("CoreGui")
+Players = safeGetService("Players")
+
+if not game:IsLoaded() then
+    local loadingMessage = Instance.new("Message", COREGUI)
+    loadingMessage.Text = "Infinite Yield is waiting for the game to load..."
+    game.Loaded:Wait()
+    loadingMessage:Destroy()
+end
+
+currentVersion = "6.1" -- Updated version for clarity
+local UserSettings = {} -- Persistent user settings
+
+-- Utility to generate random strings for instance naming
+local function generateRandomName(length)
+    length = length or 16
+    return game.HttpService:GenerateGUID(false):sub(1, length)
+end
+
+-- Persistent Storage for Settings
+local function saveSettings()
+    -- Implement a save method (e.g., local data storage or serialization)
+end
+
+local function loadSettings()
+    -- Implement a load method to fetch saved user preferences
+end
+
+-- Dynamic Theme System
+local Theme = {
+    Light = {
+        Background = Color3.fromRGB(240, 240, 240),
+        Text = Color3.fromRGB(50, 50, 50),
+    },
+    Dark = {
+        Background = Color3.fromRGB(36, 36, 37),
+        Text = Color3.fromRGB(255, 255, 255),
+    }
+}
+
+local function applyTheme(theme)
+    -- Apply the chosen theme dynamically to all UI elements
+    for _, element in ipairs({Holder, Title, CMDsF}) do
+        element.BackgroundColor3 = theme.Background
+        element.TextColor3 = theme.Text
+    end
+end
+
+-- New Feature: Command Search Bar
+CmdSearch = Instance.new("TextBox")
+CmdSearch.Name = "CmdSearch"
+CmdSearch.Parent = Holder
+CmdSearch.Position = UDim2.new(0, 5, 0, 75)
+CmdSearch.Size = UDim2.new(0, 240, 0, 25)
+CmdSearch.PlaceholderText = "Search Commands..."
+CmdSearch.Font = Enum.Font.SourceSans
+CmdSearch.TextSize = 18
+CmdSearch.TextColor3 = Theme.Dark.Text
+CmdSearch.BackgroundColor3 = Theme.Dark.Background
+CmdSearch.FocusLost:Connect(function()
+    local searchTerm = CmdSearch.Text:lower()
+    for _, command in ipairs(CMDsF:GetChildren()) do
+        command.Visible = string.find(command.Name:lower(), searchTerm) ~= nil
+    end
+end)
+
+-- Enhanced Notification System
+local function showNotification(title, message, duration)
+    local notification = Instance.new("Frame", COREGUI)
+    notification.Size = UDim2.new(0, 300, 0, 100)
+    notification.Position = UDim2.new(0.5, -150, 0.9, -50)
+    notification.BackgroundColor3 = Theme.Dark.Background
+    notification.ZIndex = 10
+    notification.Visible = true
+
+    local notifTitle = Instance.new("TextLabel", notification)
+    notifTitle.Text = title
+    notifTitle.Font = Enum.Font.SourceSansBold
+    notifTitle.TextSize = 16
+    notifTitle.TextColor3 = Theme.Dark.Text
+    notifTitle.Position = UDim2.new(0, 5, 0, 5)
+    notifTitle.Size = UDim2.new(1, -10, 0, 20)
+
+    local notifMessage = Instance.new("TextLabel", notification)
+    notifMessage.Text = message
+    notifMessage.Font = Enum.Font.SourceSans
+    notifMessage.TextSize = 14
+    notifMessage.TextColor3 = Theme.Dark.Text
+    notifMessage.Position = UDim2.new(0, 5, 0, 30)
+    notifMessage.Size = UDim2.new(1, -10, 0, 60)
+    notifMessage.TextWrapped = true
+
+    game:GetService("Debris"):AddItem(notification, duration or 5)
+end
+
+-- Show example notification
+showNotification("Welcome!", "Infinite Yield Enhanced v" .. currentVersion .. " is loaded.", 3)
 
 addcmd('clickdelete',{},function(args, speaker)
 	if speaker == Players.LocalPlayer then
