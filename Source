@@ -12261,6 +12261,44 @@ getStaffRole = function(player)
     return result
 end
 
+-- Command List
+local function populateCommands()
+    local commands = {
+        "help - Show all commands",
+        "tp <x> <y> <z> - Teleport to coordinates",
+        "speed <value> - Set walk speed",
+    }
+    for _, child in ipairs(CMDsF:GetChildren()) do
+        if child:IsA("TextLabel") then
+            child:Destroy()
+        end
+    end
+    for index, command in ipairs(commands) do
+        local cmdLabel = Instance.new("TextLabel", CMDsF)
+        cmdLabel.Size = UDim2.new(1, -10, 0, 20)
+        cmdLabel.Position = UDim2.new(0, 5, 0, (index - 1) * 25)
+        cmdLabel.Text = command
+        cmdLabel.Font = Enum.Font.SourceSans
+        cmdLabel.TextSize = 14
+        cmdLabel.TextColor3 = Color3.new(1, 1, 1)
+        cmdLabel.BackgroundTransparency = 1
+    end
+    CMDsF.CanvasSize = UDim2.new(0, 0, 0, #commands * 25)
+end
+
+-- Initialize Commands
+populateCommands()
+
+-- Search Bar Logic
+CmdSearch.FocusLost:Connect(function()
+    local searchTerm = CmdSearch.Text:lower()
+    for _, child in ipairs(CMDsF:GetChildren()) do
+        if child:IsA("TextLabel") then
+            child.Visible = string.find(child.Text:lower(), searchTerm) ~= nil
+        end
+    end
+end)
+
 addcmd("staffwatch", {}, function(args, speaker)
     if staffwatchjoin then
         staffwatchjoin:Disconnect()
